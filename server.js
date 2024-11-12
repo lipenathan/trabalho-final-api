@@ -49,7 +49,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.post('/login', (req, res) => {
     const { username } = req.body;
     if (!username) {
-        return res.status(400).send({ message: 'Username is required' });
+        return res.status(400).send({ message: 'Nome do usuário é obrigatório' });
     }
     // Cria um token
     const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: '1h' });
@@ -94,7 +94,7 @@ app.post('/saveData', authenticateToken, (req, res) => {
         userData.set(userId, []);
     }
     userData.get(userId).push(data);
-    res.send({ message: 'Data saved successfully!' });
+    res.send({ message: 'Dados salvos com sucesso!' });
 });
 
 /**
