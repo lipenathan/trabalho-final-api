@@ -7,6 +7,8 @@ const app = express();
 app.use(express.json());
 
 const userData = new Map();
+const userIdentifiedData = new Map();
+
 const SECRET_KEY = 'seu_segredo_super_secreto'; // Em produção, armazene isso em uma variável de ambiente
 
 // Configuração do Swagger
@@ -112,6 +114,35 @@ app.get('/getData', authenticateToken, (req, res) => {
     const userId = req.user.username;
     res.send(userData.get(userId) || []);
 });
+
+
+//lógica com incrementação
+app.post('/identified/saveData', authenticateToken, (req, res) => {
+    const userId = req.user.username;
+    const data = req.body;
+    if (!userIdentifiedData.has(userId)) {
+        userIdentifiedData.set(userId, []);
+    }
+    var id = userIdentifiedData.get(userId).length + 1
+    userIdentifiedData.get(userId).push({
+        "id": id,
+        "data": data
+    });
+    res.send({ message: 'Dados salvos com sucesso!' });
+});
+
+app.get('/identified/getData', authenticateToken, (req, res) => {
+    const userId = req.user.username;
+    res.send(userIdentifiedData.get(userId) || []);
+});
+
+app.get('/identified/getData/:dataId', authenticateToken, (req, res) => {
+    const userId = req.user.username;
+    const dataId = req.params.dataId
+    const data = userIdentifiedData.get(userId).find( data => data.id == dataId)
+    res.send(data);
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
